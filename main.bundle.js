@@ -11140,7 +11140,8 @@ var onLoad = $(document).ready(function () {
 });
 
 var clickColorize = $("button").on('click', function () {
-  var text = $("textarea").val().split(" ");
+  var string = (0, _colorHandlers.removePunctuation)($("textarea").val());
+  var text = string.split(" ");
   var colors = (0, _colorHandlers.findColors)(text);
   (0, _colorRequests.postColors)(colors);
   var uniqueColors = (0, _colorHandlers.findUniqueColors)(colors);
@@ -11192,6 +11193,11 @@ var findUniqueColors = function findUniqueColors(colors) {
   return uniqueColors;
 };
 
+var removePunctuation = function removePunctuation(input) {
+  var punctuationless = input.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+  return punctuationless.replace(/\s{2,}/g, " ");
+};
+
 var findColors = function findColors(text) {
   var colors = [];
   text.forEach(function (element) {
@@ -11208,7 +11214,7 @@ var createSwatches = function createSwatches(uniqueColors) {
   });
 };
 
-module.exports = { findUniqueColors: findUniqueColors, createSwatches: createSwatches, findColors: findColors };
+module.exports = { findUniqueColors: findUniqueColors, createSwatches: createSwatches, findColors: findColors, removePunctuation: removePunctuation };
 
 /***/ })
 /******/ ]);
