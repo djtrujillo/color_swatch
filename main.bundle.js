@@ -11209,6 +11209,7 @@ var findColors = function findColors(text) {
 };
 
 var createSwatches = function createSwatches(uniqueColors) {
+  $(".swatch").remove();
   uniqueColors.forEach(function (element) {
     $(".colorized-text").append('<div class="swatch" style="background-color:' + _colors2.default[element] + '"></div>');
   });
