@@ -10494,17 +10494,19 @@ var topColor = function topColor() {
 };
 
 var postColors = function postColors(colors) {
+  var colorObjects = createColorObjects(colors);
+  colorObjects.forEach(function (data) {
+    $.post(requestUrl + "/api/v1/colors", data, function (data, status) {});
+  });
+};
+
+var createColorObjects = function createColorObjects(colors) {
   var colorObjects = [];
   colors.forEach(function (element) {
     var obj = { color: { value: "" + element } };
     colorObjects.push(obj);
   });
-  console.log(colorObjects);
-  // colors.forEach(
-  //   $.post(`${requestUrl}/api/v1/colors`, function( data ) {
-  //     $( ".result" ).html( data );
-  //   });
-  // )
+  return colorObjects;
 };
 
 module.exports = { topColor: topColor, postColors: postColors };
@@ -11139,7 +11141,9 @@ var onLoad = $(document).ready(function () {
 
 var clickColorize = $("button").on('click', function () {
   var text = $("textarea").val().split(" ");
-  var uniqueColors = (0, _colorHandlers.findUniqueColors)(text);
+  var colors = (0, _colorHandlers.findColors)(text);
+  (0, _colorRequests.postColors)(colors);
+  var uniqueColors = (0, _colorHandlers.findUniqueColors)(colors);
   (0, _colorHandlers.createSwatches)(uniqueColors);
 });
 
@@ -11180,22 +11184,22 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var $ = __webpack_require__(0);
 
-var findUniqueColors = function findUniqueColors(text) {
-  var colors = [];
+var findUniqueColors = function findUniqueColors(colors) {
   var uniqueColors = [];
+  $.each(colors, function (i, el) {
+    if ($.inArray(el, uniqueColors) === -1) uniqueColors.push(el);
+  });
+  return uniqueColors;
+};
+
+var findColors = function findColors(text) {
+  var colors = [];
   text.forEach(function (element) {
     if (element in _colors2.default) {
       colors.push(element);
     }
   });
-
-  (0, _colorRequests2.default)(colors);
-
-  $.each(colors, function (i, el) {
-    if ($.inArray(el, uniqueColors) === -1) uniqueColors.push(el);
-  });
-
-  return uniqueColors;
+  return colors;
 };
 
 var createSwatches = function createSwatches(uniqueColors) {
@@ -11204,7 +11208,7 @@ var createSwatches = function createSwatches(uniqueColors) {
   });
 };
 
-module.exports = { findUniqueColors: findUniqueColors, createSwatches: createSwatches };
+module.exports = { findUniqueColors: findUniqueColors, createSwatches: createSwatches, findColors: findColors };
 
 /***/ })
 /******/ ]);
