@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -10481,24 +10481,59 @@ module.exports = {
 "use strict";
 
 
-__webpack_require__(3);
+var _colorResponses = __webpack_require__(10);
 
-var _colors = __webpack_require__(1);
+var $ = __webpack_require__(0);
 
-var _colors2 = _interopRequireDefault(_colors);
+var requestUrl = "https://color-swatch-api.herokuapp.com";
 
-var _events = __webpack_require__(8);
+var topColor = function topColor() {
+  $.get(requestUrl + "/api/v1/top_color", function (data) {
+    (0, _colorResponses.postTopColor)(data);
+  });
+};
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var postColors = function postColors(colors) {
+  var colorObjects = [];
+  colors.forEach(function (element) {
+    var obj = { color: { value: "" + element } };
+    colorObjects.push(obj);
+  });
+  console.log(colorObjects);
+  // colors.forEach(
+  //   $.post(`${requestUrl}/api/v1/colors`, function( data ) {
+  //     $( ".result" ).html( data );
+  //   });
+  // )
+};
+
+module.exports = { topColor: topColor, postColors: postColors };
 
 /***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
+"use strict";
+
+
+__webpack_require__(4);
+
+var _colors = __webpack_require__(1);
+
+var _colors2 = _interopRequireDefault(_colors);
+
+var _events = __webpack_require__(9);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(4);
+var content = __webpack_require__(5);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -10506,7 +10541,7 @@ var transform;
 var options = {"hmr":true}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(6)(content, options);
+var update = __webpack_require__(7)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -10523,10 +10558,10 @@ if(false) {
 }
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(5)(undefined);
+exports = module.exports = __webpack_require__(6)(undefined);
 // imports
 
 
@@ -10537,7 +10572,7 @@ exports.push([module.i, "main .text-submission textarea, main .text-submission b
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports) {
 
 /*
@@ -10619,7 +10654,7 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -10675,7 +10710,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(7);
+var	fixUrls = __webpack_require__(8);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -10991,7 +11026,7 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports) {
 
 
@@ -11086,13 +11121,13 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _colorRequests = __webpack_require__(9);
+var _colorRequests = __webpack_require__(2);
 
 var _colorHandlers = __webpack_require__(11);
 
@@ -11104,31 +11139,11 @@ var onLoad = $(document).ready(function () {
 
 var clickColorize = $("button").on('click', function () {
   var text = $("textarea").val().split(" ");
-  (0, _colorHandlers.findUniqueColors)(text);
+  var uniqueColors = (0, _colorHandlers.findUniqueColors)(text);
+  (0, _colorHandlers.createSwatches)(uniqueColors);
 });
 
 module.exports = { onLoad: onLoad, clickColorize: clickColorize };
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _colorResponses = __webpack_require__(10);
-
-var $ = __webpack_require__(0);
-
-var requestUrl = "https://color-swatch-api.herokuapp.com";
-
-var topColor = function topColor() {
-  $.get(requestUrl + "/api/v1/top_color", function (data) {
-    (0, _colorResponses.postTopColor)(data);
-  });
-};
-
-module.exports = { topColor: topColor };
 
 /***/ }),
 /* 10 */
@@ -11157,16 +11172,39 @@ var _colors = __webpack_require__(1);
 
 var _colors2 = _interopRequireDefault(_colors);
 
+var _colorRequests = __webpack_require__(2);
+
+var _colorRequests2 = _interopRequireDefault(_colorRequests);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var findUniqueColors = function findUniqueColors(text) {
+var $ = __webpack_require__(0);
 
-  console.log(text in _colors2.default);
-  // console.log(text)
-  // console.log(COLORS)
+var findUniqueColors = function findUniqueColors(text) {
+  var colors = [];
+  var uniqueColors = [];
+  text.forEach(function (element) {
+    if (element in _colors2.default) {
+      colors.push(element);
+    }
+  });
+
+  (0, _colorRequests2.default)(colors);
+
+  $.each(colors, function (i, el) {
+    if ($.inArray(el, uniqueColors) === -1) uniqueColors.push(el);
+  });
+
+  return uniqueColors;
 };
 
-module.exports = { findUniqueColors: findUniqueColors };
+var createSwatches = function createSwatches(uniqueColors) {
+  uniqueColors.forEach(function (element) {
+    $(".colorized-text").append('<div class="swatch" style="background-color:' + _colors2.default[element] + '"></div>');
+  });
+};
+
+module.exports = { findUniqueColors: findUniqueColors, createSwatches: createSwatches };
 
 /***/ })
 /******/ ]);
